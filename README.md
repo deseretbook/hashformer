@@ -61,5 +61,5 @@ data = {
   phone: '555-555-5555',
 }
 
-HashMash.transform(xform, data) # Returns {name: 'Hash Mash', phone: 5555555555}
+HashMash.transform(data, xform) # Returns {name: 'Hash Mash', phone: 5555555555}
 ```

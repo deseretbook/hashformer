@@ -6,5 +6,7 @@
 require 'hash_mash'
 
 RSpec.describe HashMash do
-  pending 'TODO: write tests'
+  describe '.validate' do
+    pending 'processes simple transformations'
+  end
 end
