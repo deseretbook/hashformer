@@ -1,4 +1,4 @@
-Hash Mash
+Hash Mash [ ![Codeship Status for deseretbook/hash_mash](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
 =========
 
 ### Mash any Hash with a declarative data transformation DSL
