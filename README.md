@@ -44,6 +44,10 @@ format into a Hash with the `out_schema` format.
 ```ruby
 # Hashformer transformation - https://github.com/deseretbook/hashformer
 xform = {
+  # Validate input and output data according to the ClassyHash schemas
+  __in_schema: in_schema,
+  __out_schema: out_schema,
+
   # Combine first and last name into a single String
   name: lambda {|data| "#{data[:first]} #{data[:last]}".strip },
 
