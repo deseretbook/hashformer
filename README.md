@@ -65,3 +65,19 @@ data = {
 
 HashMash.transform(data, xform) # Returns {name: 'Hash Mash', location: 'Here', phone: 5555555555}
 ```
+
+### Testing
+
+Hash Mash includes a thorough [RSpec](http://rspec.info) test suite:
+
+```bash
+# Execute within a clone of the Git repository:
+bundle install
+rspec
+```
+
+### Alternatives
+
+- [hash_transformer](https://github.com/trampoline/hash_transformer) provides
+  an *imperative* DSL for Hash modification.
+- [ActiveModel::Serializers](https://github.com/rails-api/active_model_serializers)
