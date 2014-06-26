@@ -5,6 +5,8 @@
 
 require "hash_mash/version"
 
+require 'classy_hash'
+
 # This module contains the HashMash methods for transforming Ruby Hash objects
 # from one form to another.
 module HashMash
@@ -35,7 +37,7 @@ module HashMash
 
     if validate && xform[:__in_schema].is_a?(Hash)
       begin
-        ClassyHash.validate(xform[:__in_schema], data)
+        ClassyHash.validate(data, xform[:__in_schema])
       rescue => e
         raise "Input data failed validation: #{e}"
       end
@@ -52,7 +54,7 @@ module HashMash
 
     if validate && xform[:__out_schema].is_a?(Hash)
       begin
-        ClassyHash.validate(xform[:__out_schema], out)
+        ClassyHash.validate(out, xform[:__out_schema])
       rescue => e
         raise "Output data failed validation: #{e}"
       end
