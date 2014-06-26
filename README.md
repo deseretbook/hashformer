@@ -1,4 +1,4 @@
-Hash Mash [ ![Codeship Status for deseretbook/hash_mash](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
+Hash Mash [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/gpa.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/coverage.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Codeship Status for deseretbook/hash_mash](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
 =========
 
 TODO: The name isn't quite unique enough; come up with a new name.
