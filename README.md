@@ -5,15 +5,14 @@ Hash Mash [ ![Codeship Status for deseretbook/hash_mash](https://www.codeship.io
 
 Hash Mash provides a simple, Ruby Hash-based way of transforming data from one
 format to another.  It's vaguely like XSLT, but way less complicated and way
-more Ruby.  It can also integrate with [Classy Hash](https://github.com/deseretbook/classy_hash) (TODO).
+more Ruby.  It can also help verify your transformations by validating input
+and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
 
 You specify Hash to Hash transformations using a Hash with a list of output
 keys, input keys, and transformations, and Hash Mash will convert your data
 into the format you specify.
 
 ### Examples
-
-TODO: Need to write the code and tests
 
 #### Simple example
 
@@ -46,20 +45,21 @@ format into a Hash with the `out_schema` format.
 # Hash Mash transformation - https://github.com/deseretbook/hash_mash
 xform = {
   # Combine first and last name into a single String
-  name: lambda {|in| "#{in[:first]} #{in[:last]}" }
+  name: lambda {|data| "#{data[:first]} #{data[:last]}".strip },
 
   # Copy the :city field directly into :location
   location: :city,
 
   # Remove non-digits from :phone
-  phone: lambda {|in| in[:phone].gsub(/[^\d]/, '').to_i }
+  phone: lambda {|data| data[:phone].gsub(/[^\d]/, '').to_i }
 }
 
 data = {
   first: 'Hash',
   last: 'Mash',
+  city: 'Here',
   phone: '555-555-5555',
 }
 
-HashMash.transform(data, xform) # Returns {name: 'Hash Mash', phone: 5555555555}
+HashMash.transform(data, xform) # Returns {name: 'Hash Mash', location: 'Here', phone: 5555555555}
 ```
