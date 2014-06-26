@@ -1,15 +1,15 @@
-# Hash Mash: A declarative data transformation DSL
+# Hashformer: A declarative data transformation DSL for Ruby
 # Created June 2014 by Mike Bourgeous, DeseretBook.com
 # Copyright (C)2014 Deseret Book
 # See LICENSE and README.md for details.
 
-require "hash_mash/version"
+require "hashformer/version"
 
 require 'classy_hash'
 
-# This module contains the HashMash methods for transforming Ruby Hash objects
+# This module contains the Hashformer methods for transforming Ruby Hash objects
 # from one form to another.
-module HashMash
+module Hashformer
   # Transforms +data+ according to the specification in +xform+.  The
   # transformation specification in +xform+ is a Hash specifying an input key
   # name (e.g. a String or Symbol) or transforming lambda for each output key
@@ -17,7 +17,7 @@ module HashMash
   # validate the input and output data formats against the :@__in_schema and
   # :@__out_schema keys within +xform+, if specified.
   #
-  # Nested transformations can be specified by calling HashMash::transform
+  # Nested transformations can be specified by calling Hashformer::transform
   # again inside of a lambda.
   #
   # If a value in +xform+ is a Proc, the Proc will be called with the input
@@ -29,8 +29,8 @@ module HashMash
   # the output key.
   #
   # Example (see the README for more examples):
-  #   HashMash.transform({old_name: 'Name'}, {new_name: :old_name}) # Returns {new_name: 'Name'}
-  #   HashMash.transform({orig: 5}, {opposite: lambda{|i| -i[:orig]}}) # Returns {opposite: -5}
+  #   Hashformer.transform({old_name: 'Name'}, {new_name: :old_name}) # Returns {new_name: 'Name'}
+  #   Hashformer.transform({orig: 5}, {opposite: lambda{|i| -i[:orig]}}) # Returns {opposite: -5}
   def self.transform(data, xform, validate=true)
     raise 'Must transform a Hash' unless data.is_a?(Hash)
     raise 'Transformation must be a Hash' unless xform.is_a?(Hash)

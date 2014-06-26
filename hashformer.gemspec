@@ -1,20 +1,20 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'hash_mash/version'
+require 'hashformer/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "hash_mash"
-  spec.version       = HashMash::VERSION
+  spec.name          = "hashformer"
+  spec.version       = Hashformer::VERSION
   spec.authors       = ['Deseret Book', 'Mike Bourgeous']
   spec.email         = ["mike@mikebourgeous.com"]
-  spec.summary       = 'Mash any Hash with a declarative data transformation DSL'
+  spec.summary       = 'Transform any Hash with a declarative data transformation DSL for Ruby'
   spec.description   = <<-DESC
-    Hash Mash provides a simple, Ruby Hash-based way of transforming data from
+    Hashformer provides a simple, Ruby Hash-based way of transforming data from
     one format to another.  It's vaguely like XSLT, but way less complicated
     and way more Ruby.
     DESC
-  spec.homepage      = "https://github.com/deseretbook/hash_mash"
+  spec.homepage      = "https://github.com/deseretbook/hashformer"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }

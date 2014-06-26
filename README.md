@@ -1,17 +1,15 @@
-Hash Mash [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/gpa.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/coverage.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Codeship Status for deseretbook/hash_mash](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
+Hashformer [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/gpa.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/coverage.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
 =========
 
-TODO: The name isn't quite unique enough; come up with a new name.
+### Transform any Hash with a declarative data transformation DSL for Ruby
 
-### Mash any Hash with a declarative data transformation DSL
-
-Hash Mash provides a simple, Ruby Hash-based way of transforming data from one
+Hashformer provides a simple, Ruby Hash-based way of transforming data from one
 format to another.  It's vaguely like XSLT, but way less complicated and way
 more Ruby.  It can also help verify your transformations by validating input
 and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
 
 You specify Hash to Hash transformations using a Hash with a list of output
-keys, input keys, and transformations, and Hash Mash will convert your data
+keys, input keys, and transformations, and Hashformer will convert your data
 into the format you specify.
 
 ### Examples
@@ -40,11 +38,11 @@ out_schema = {
 }
 ```
 
-You can write a Hash Mash transformation to turn any Hash with the `in_schema`
+You can write a Hashformer transformation to turn any Hash with the `in_schema`
 format into a Hash with the `out_schema` format.
 
 ```ruby
-# Hash Mash transformation - https://github.com/deseretbook/hash_mash
+# Hashformer transformation - https://github.com/deseretbook/hashformer
 xform = {
   # Combine first and last name into a single String
   name: lambda {|data| "#{data[:first]} #{data[:last]}".strip },
@@ -58,17 +56,17 @@ xform = {
 
 data = {
   first: 'Hash',
-  last: 'Mash',
+  last: 'Transformed',
   city: 'Here',
   phone: '555-555-5555',
 }
 
-HashMash.transform(data, xform) # Returns {name: 'Hash Mash', location: 'Here', phone: 5555555555}
+Hashformer.transform(data, xform) # Returns {name: 'Hash Transformed', location: 'Here', phone: 5555555555}
 ```
 
 ### Testing
 
-Hash Mash includes a thorough [RSpec](http://rspec.info) test suite:
+Hashformer includes a thorough [RSpec](http://rspec.info) test suite:
 
 ```bash
 # Execute within a clone of the Git repository:
