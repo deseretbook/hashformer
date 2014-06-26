@@ -35,13 +35,7 @@ module HashMash
     raise 'Must transform a Hash' unless data.is_a?(Hash)
     raise 'Transformation must be a Hash' unless xform.is_a?(Hash)
 
-    if validate && xform[:__in_schema].is_a?(Hash)
-      begin
-        ClassyHash.validate(data, xform[:__in_schema])
-      rescue => e
-        raise "Input data failed validation: #{e}"
-      end
-    end
+    validate(data, xform[:__in_schema], 'input') if validate
 
     out = {}
     xform.each do |key, value|
@@ -52,14 +46,19 @@ module HashMash
       out[key] = value
     end
 
-    if validate && xform[:__out_schema].is_a?(Hash)
-      begin
-        ClassyHash.validate(out, xform[:__out_schema])
-      rescue => e
-        raise "Output data failed validation: #{e}"
-      end
-    end
+    validate(out, xform[:__out_schema], 'output') if validate
 
     out
+  end
+
+  private
+  def self.validate(data, schema, step)
+    return unless schema.is_a?(Hash)
+
+    begin
+      ClassyHash.validate(data, schema)
+    rescue => e
+      raise "#{step} data failed validation: #{e}"
+    end
   end
 end

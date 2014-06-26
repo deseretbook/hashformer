@@ -174,7 +174,7 @@ RSpec.describe HashMash do
       it 'rejects invalid output' do
         expect{
           HashMash.transform({first: 'Hello', last: 'There', phone: '555-555-5555'}, xform)
-        }.to raise_error(/Output/)
+        }.to raise_error(/output data failed/)
       end
     end
   end
