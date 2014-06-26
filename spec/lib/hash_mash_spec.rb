@@ -3,6 +3,8 @@
 # Copyright (C)2014 Deseret Book
 # See LICENSE and README.md for details.
 
+require 'spec_helper'
+
 require 'hash_mash'
 
 RSpec.describe HashMash do
