@@ -83,3 +83,8 @@ rspec
 - [hash_transformer](https://github.com/trampoline/hash_transformer) provides
   an *imperative* DSL for Hash modification.
 - [ActiveModel::Serializers](https://github.com/rails-api/active_model_serializers)
+
+### License
+
+Hashformer is released under the MIT license (see the `LICENSE` file for the
+license text and copyright notice).
