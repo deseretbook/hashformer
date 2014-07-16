@@ -126,7 +126,36 @@ RSpec.describe Hashformer::Generate do
   end
 
   describe '.path' do
-    pending 'test HF::G.path'
+    let(:data) {
+      {
+        a: { b: [ 'c', 'd', 'e', 'f' ] }
+      }
+    }
+
+    let(:xform) {
+      {
+        a: HF::G.path[:a][:b][0],
+        b: HF::G.path[:a][:b][3]
+      }
+    }
+
+    it 'produces the expected output for a simple input' do
+      expect(Hashformer.transform(data, xform)).to eq({a: 'c', b: 'f'})
+    end
+
+    it 'returns nil when dereferencing a nonexistent path' do
+      expect(Hashformer.transform(data, {a: HF::G.path[:b][:c][0][1][2][3]})).to eq({a: nil})
+    end
+
+    it 'raises an error when dereferencing a non-array/non-hash object' do
+      expect{Hashformer.transform(data, {a: HF::G.path[:a][:b][0][:fail]})}.to raise_error(/dereferencing/)
+    end
+
+    context 'no path is added' do
+      it 'returns the input hash' do
+        expect(Hashformer.transform({a: 1, b: 2}, {x: HF::G.path})).to eq({x: {a: 1, b: 2}})
+      end
+    end
   end
 
   describe '.chain' do
