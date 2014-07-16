@@ -113,6 +113,8 @@ module Hashformer
       end
     end
 
+    # TODO: Add a constant generator (that can be chained?)
+
     # Generates a transformation that passes one or more values from the input
     # Hash (denoted by key names or paths (see Hashformer::Generate.path) to
     # the block.  If the block is not given, then the values are placed in an
