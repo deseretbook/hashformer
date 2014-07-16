@@ -68,6 +68,8 @@ module Hashformer
         input_hash[key]
       end
     }
+
+    # TODO: Change to get_key(), add support for nested output hashes
   end
 
   private
