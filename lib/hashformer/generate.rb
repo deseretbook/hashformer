@@ -104,6 +104,10 @@ module Hashformer
     # not respond to [], or otherwise raise an exception, then an exception
     # will be raised by the transformation.
     #
+    # The major difference between .path and .chain is that .path will return
+    # nil if a nonexistent key is referenced (even multiple times), while
+    # .chain will raise an exception.
+    #
     # Examples:
     #   HF::G.path[:user][:address][:line1]
     #   HF::G.path[:lines][5]
