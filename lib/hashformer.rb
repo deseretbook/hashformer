@@ -3,12 +3,16 @@
 # Copyright (C)2014 Deseret Book
 # See LICENSE and README.md for details.
 
-require "hashformer/version"
-
 require 'classy_hash'
+
+require 'hashformer/version'
+require 'hashformer/generate'
+
 
 # This module contains the Hashformer methods for transforming Ruby Hash objects
 # from one form to another.
+#
+# See README.md for examples.
 module Hashformer
   # Transforms +data+ according to the specification in +xform+.  The
   # transformation specification in +xform+ is a Hash specifying an input key
@@ -41,8 +45,8 @@ module Hashformer
     xform.each do |key, value|
       next if key == :__in_schema || key == :__out_schema
 
-      key = key.call(value, data) if key.is_a?(Proc)
-      value = value.is_a?(Proc) ? value.call(data) : data[value]
+      key = key.call(value, data) if key.respond_to?(:call)
+      value = value.respond_to?(:call) ? value.call(data) : data[value]
       out[key] = value
     end
 
@@ -61,4 +65,8 @@ module Hashformer
       raise "#{step} data failed validation: #{e}"
     end
   end
+end
+
+if !Kernel.const_defined?(:HF)
+  HF = Hashformer
 end
