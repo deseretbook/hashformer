@@ -185,5 +185,47 @@ RSpec.describe Hashformer::Generate do
     it 'produces the expected output for a simple input' do
       expect(Hashformer.transform(data, xform)).to eq({out1: 22, out2: 'd', out3: 1})
     end
+
+    context 'using normally reserved methods' do
+      it 'calls a proc with .call' do
+        calldata = {
+          p: ->(*a){a.reduce(1, &:*)}
+        }
+        expect(Hashformer.transform(calldata, {o: HF[:p].call()})).to eq({o: 1})
+        expect(Hashformer.transform(calldata, {o: HF[:p].call(5, 0)})).to eq({o: 0})
+        expect(Hashformer.transform(calldata, {o: HF[:p].call(5, 4, 5)})).to eq({o: 100})
+      end
+
+      it 'sends messages to the correct target with .send' do
+        senddata = {
+          a: 'Hashformer'
+        }
+        sendxf = {
+          b: HF[:a].clone.send(:reverse).send(:concat, ' transforms')
+        }
+        expect(Hashformer.transform(senddata, sendxf)).to eq({b: 'remrofhsaH transforms'})
+      end
+
+      it 'chains operators' do
+        opxf = {
+          a: !((HF[:a] + 3) == 8),
+        }
+        expect(Hashformer.transform({a: 5}, opxf)).to eq({a: false})
+        expect(Hashformer.transform({a: 6}, opxf)).to eq({a: true})
+      end
+
+      it 'chains instance_exec' do
+        class HFTestFoo
+          def initialize(val)
+            @y = val
+          end
+        end
+        execxf = {
+          x: -HF[:a].instance_exec{@y}
+        }
+        expect(Hashformer.transform({a: HFTestFoo.new(-1.5)}, execxf)).to eq({x: 1.5})
+        expect(Hashformer.transform({a: HFTestFoo.new(2014)}, execxf)).to eq({x: -2014})
+      end
+    end
   end
 end
