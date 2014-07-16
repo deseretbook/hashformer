@@ -19,7 +19,7 @@ module Hashformer
 
       # Called to process the map on the given +input_hash+
       def call(input_hash)
-        values = Hashformer.get_keys(input_hash, *@keys)
+        values = @keys.map{|k| Hashformer.get_value(input_hash, k)}
         values = @block.call(*values) if @block
         values
       end
