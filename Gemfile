@@ -11,6 +11,9 @@ group :test do
   gem "codeclimate-test-reporter", require: nil
 end
 
-gem 'byebug', group: :development
+group :development do
+  gem 'debugger', platforms: [:ruby_19]
+  gem 'byebug', platforms: [:ruby_20, :ruby_21]
+end
 
 gemspec
