@@ -123,6 +123,12 @@ RSpec.describe Hashformer::Generate do
 
       expect(Hashformer.transform(data, xform)).to eq({name: [['Hash', 'Former'], ['Former', 'Hash']]})
     end
+
+    it 'joins an array using a method reference' do
+      data = { a: [1, 2, 3, 4] }
+      xform = { a: HF::G.map(:a, &:join) }
+      expect(Hashformer.transform(data, xform)).to eq({a: '1234'})
+    end
   end
 
   describe '.path' do
