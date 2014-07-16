@@ -165,6 +165,25 @@ RSpec.describe Hashformer::Generate do
   end
 
   describe '.chain' do
-    pending 'test HF::G.chain'
+    let(:data) {
+      {
+        in1: {
+          in1: ['a', 'b', 'c', 'd'],
+          in2: [1, 2, 3, [4, 5, 6, 7]]
+        }
+      }
+    }
+
+    let(:xform) {
+       xform = {
+         out1: HF::G.chain[:in1][:in2][3].reduce(&:+),
+         out2: HF[:in1][:in1][3],
+         out3: HF[].count
+       }
+    }
+
+    it 'produces the expected output for a simple input' do
+      expect(Hashformer.transform(data, xform)).to eq({out1: 22, out2: 'd', out3: 1})
+    end
   end
 end
