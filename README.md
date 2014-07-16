@@ -67,8 +67,8 @@ data = {
 }
 xform = {
   name: :name,
-  line1: HF::G.path[:address][0][:line1],
-  line2: HF::G.path[:address][0][:line2]
+  line1: HF::G.path[:addresses][0][:line1],
+  line2: HF::G.path[:addresses][0][:line2]
 }
 
 Hashformer.transform(data, xform)
@@ -127,7 +127,7 @@ xform = {
 }
 
 Hashformer.transform(data, xform)
-# => {x: 'Remrofhsah', v: 91}
+# => {s: 'Remrofhsah', v: 91}
 ```
 
 Unlike `HF::g.path`, `HF[]`/`HF::G.chain` will raise an exception if you try to
@@ -158,7 +158,7 @@ xform = {
 }
 
 Hashformer.transform(data, xform)
-# => {a: 1, b: {b: 1}}
+# => {a: 1, b: {a: 1}}
 ```
 
 Although it's not recommended, you can also chain operators as long as `HF[]`
@@ -250,7 +250,7 @@ data = {
   value: 0
 }
 xform = {
-  ->(h){h[:key]} => :value
+  ->(value, h){h[:key]} => :value
 }
 
 Hashformer.transform(data, xform)
