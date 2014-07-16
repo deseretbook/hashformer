@@ -57,6 +57,31 @@ module Hashformer
       end
     end
 
+    # Internal representation of a method call and array lookup chainer.  Do
+    # not use this directly; instead use HF::G.chain().
+    class Chain
+      def initialize
+        @calls = []
+      end
+
+      # Applies the methods stored by #method_missing
+      def call(input_hash)
+        value = input_hash
+        @calls.each do |c|
+          value = value.send(c[:name], *c[:args], &c[:block])
+        end
+        value
+      end
+
+      # FIXME: Allow chaining of .call() and other methods that are defined by default
+
+      # Adds a method call or array dereference to the list of calls to apply.
+      def method_missing(name, *args, &block)
+        @calls << {name: name, args: args, block: block}
+        self
+      end
+    end
+
     # Generates a transformation that passes one or more values from the input
     # Hash (denoted by key names or paths (see Hashformer::Generate.path) to
     # the block.  If the block is not given, then the values are placed in an
@@ -86,6 +111,18 @@ module Hashformer
       Path.new
     end
 
+    # Generates a method call chain to apply to the input hash given to a
+    # transformation.  This allows path references (as with HF::G.path) and
+    # method calls to be stored and applied later.
+    #
+    # Example:
+    #   data = { in1: { in2: [1, 2, 3, [4, 5, 6, 7]] } }
+    #   xform = { out1: HF::G.chain[:in1][:in2][3].reduce(&:+) }
+    #   Hashformer.transform(data, xform) # Returns { out1: 22 }
+    def self.chain
+      Chain.new
+    end
+
     # Returns an array of values for the given list of keys or callables on the
     # given Hash.
     def self.get_keys(input_hash, *keys_or_callables)
@@ -97,4 +134,17 @@ module Hashformer
 
   # Shortcut to Hashformer::Generate
   G = Generate
+
+  # Convenience method for calling HF::G.chain() to generate a path reference
+  # and/or method call chain.  If the initial +path_item+ is not given, then
+  # the method chain will start with the input hash.  Chaining methods that
+  # have side effects or modify the underlying data is not recommended.
+  #
+  # Example:
+  #   data = { in1: { in2: ['a', 'b', 'c', 'd'] } }
+  #   xform = { out1: HF[:in1][:in2][3], out2: HF[].count }
+  #   Hashformer.transform(data, xform) # Returns { out1: 'd', out2: 1 }
+  def self.[](path_item = :__hashformer_not_given)
+    path_item == :__hashformer_not_given ? HF::G.chain : HF::G.chain[path_item]
+  end
 end
