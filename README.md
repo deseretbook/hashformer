@@ -1,4 +1,4 @@
-Hashformer [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
+Hashformer [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status?branch=master)](https://www.codeship.io/projects/24888)
 =========
 
 ### Transform any Ruby Hash with a declarative DSL
