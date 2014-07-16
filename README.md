@@ -1,16 +1,18 @@
-Hashformer [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/gpa.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Code Climate](https://codeclimate.com/repos/53ab616e6956800b69071208/badges/809078874e3f3f024da9/coverage.png)](https://codeclimate.com/repos/53ab616e6956800b69071208/feed) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
+Hashformer [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
 =========
 
 ### Transform any Hash with a declarative data transformation DSL for Ruby
 
-Hashformer provides a simple, Ruby Hash-based way of transforming data from one
-format to another.  It's vaguely like XSLT, but way less complicated and way
-more Ruby.  It can also help verify your transformations by validating input
-and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
+Hashformer is the ultimate Ruby Hash transformation tool, made from 100% pure
+Hashformium (may contain trace amounts of caffeine).  It provides a simple,
+Ruby Hash-based DSL for transforming data from one format to another.  It's
+vaguely like XSLT, but way less complicated and way more Ruby.
 
 You specify Hash to Hash transformations using a Hash with a list of output
 keys, input keys, and transformations, and Hashformer will convert your data
-into the format you specify.
+into the format you specify.  It can also help verify your transformations by
+validating input and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
+
 
 ### Examples
 
