@@ -11,4 +11,6 @@ group :test do
   gem "codeclimate-test-reporter", require: nil
 end
 
+gem 'byebug', group: :development
+
 gemspec
