@@ -115,6 +115,14 @@ RSpec.describe Hashformer::Generate do
         expect(Hashformer.transform(data, xform)).to eq({name: ['hash', 'FORMER']})
       end
     end
+
+    it 'works when chained' do
+      xform = {
+        name: HF::G.map(HF::G.map(:first, :last), HF::G.map(:last, :first))
+      }
+
+      expect(Hashformer.transform(data, xform)).to eq({name: [['Hash', 'Former'], ['Former', 'Hash']]})
+    end
   end
 
   describe '.path' do
