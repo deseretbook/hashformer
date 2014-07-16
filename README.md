@@ -258,7 +258,7 @@ Hashformer.transform(data, xform)
 ```
 
 
-#### Practical example
+#### Practical example with validation
 
 Suppose your application receives addresses in one format, but you need to pass
 them along in another format.  You might need to rename some keys, convert some
@@ -293,13 +293,13 @@ xform = {
   __out_schema: out_schema,
 
   # Combine first and last name into a single String
-  name: lambda {|data| "#{data[:first]} #{data[:last]}".strip },
+  name: HF::G.map(:first, :last) {|f, l| "#{f} #{l}".strip},
 
   # Copy the :city field directly into :location
   location: :city,
 
   # Remove non-digits from :phone
-  phone: lambda {|data| data[:phone].gsub(/[^\d]/, '').to_i }
+  phone: HF[:phone].gsub(/[^\d]/, '').to_i
 }
 
 data = {
@@ -309,7 +309,8 @@ data = {
   phone: '555-555-5555',
 }
 
-Hashformer.transform(data, xform) # Returns {name: 'Hash Transformed', location: 'Here', phone: 5555555555}
+Hashformer.transform(data, xform)
+# => {name: 'Hash Transformed', location: 'Here', phone: 5555555555}
 ```
 
 
