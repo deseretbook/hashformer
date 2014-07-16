@@ -1,7 +1,7 @@
 Hashformer [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status)](https://www.codeship.io/projects/24888)
 =========
 
-### Transform any Hash with a declarative data transformation DSL for Ruby
+### Transform any Ruby Hash with a declarative DSL
 
 Hashformer is the ultimate Ruby Hash transformation tool, made from 100% pure
 Hashformium (may contain trace amounts of caffeine).  It provides a simple,
