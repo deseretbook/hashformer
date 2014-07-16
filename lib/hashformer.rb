@@ -46,7 +46,7 @@ module Hashformer
       next if key == :__in_schema || key == :__out_schema
 
       key = key.call(value, data) if key.respond_to?(:call)
-      value = value.respond_to?(:call) ? value.call(data) : data[value]
+      value = self.get_keys(data, value).first
       out[key] = value
     end
 
@@ -55,7 +55,23 @@ module Hashformer
     out
   end
 
+  # Returns an array of values for the given list of keys or callables on the
+  # given Hash.
+  def self.get_keys(input_hash, *keys_or_callables)
+    keys_or_callables.map{ |key|
+      if Hashformer::Generate::Chain::Receiver === key
+        # Had to special case chains to allow chaining .call
+        key.__chain.call(input_hash)
+      elsif key.respond_to?(:call)
+        key.call(input_hash)
+      else
+        input_hash[key]
+      end
+    }
+  end
+
   private
+  # Validates the given data against the given schema, at the given step.
   def self.validate(data, schema, step)
     return unless schema.is_a?(Hash)
 

@@ -19,7 +19,7 @@ module Hashformer
 
       # Called to process the map on the given +input_hash+
       def call(input_hash)
-        values = G.get_keys(input_hash, *@keys)
+        values = Hashformer.get_keys(input_hash, *@keys)
         values = @block.call(*values) if @block
         values
       end
@@ -60,8 +60,41 @@ module Hashformer
     # Internal representation of a method call and array lookup chainer.  Do
     # not use this directly; instead use HF::G.chain().
     class Chain
+      # Receiver for chaining calls that has no methods of its own except
+      # initialize.  This allows methods like :call to be chained.
+      #
+      # IMPORTANT: No methods other than .__chain can be called on this object,
+      # because they will be chained!  Instead, use === to detect the object's
+      # type, for example.
+      class Receiver < BasicObject
+        # An oddly named accessor is used instead of #initialize to avoid
+        # conflicts with any methods that might be chained.
+        attr_accessor :__chain
+
+        # Adds a method call or array dereference to the list of calls to apply.
+        def method_missing(name, *args, &block)
+          @__chain << {name: name, args: args, block: block}
+          self
+        end
+
+        undef !=
+        undef ==
+        undef !
+        undef instance_exec
+        undef instance_eval
+        undef equal?
+        undef singleton_method_added
+        undef singleton_method_removed
+        undef singleton_method_undefined
+      end
+
+      # Returns the call chaining receiver.
+      attr_reader :receiver
+
       def initialize
         @calls = []
+        @receiver = Receiver.new
+        @receiver.__chain = self
       end
 
       # Applies the methods stored by #method_missing
@@ -73,11 +106,9 @@ module Hashformer
         value
       end
 
-      # FIXME: Allow chaining of .call() and other methods that are defined by default
-
-      # Adds a method call or array dereference to the list of calls to apply.
-      def method_missing(name, *args, &block)
-        @calls << {name: name, args: args, block: block}
+      # Adds the given call info (used by Receiver).
+      def <<(info)
+        @calls << info
         self
       end
     end
@@ -124,15 +155,7 @@ module Hashformer
     #   xform = { out1: HF::G.chain[:in1][:in2][3].reduce(&:+) }
     #   Hashformer.transform(data, xform) # Returns { out1: 22 }
     def self.chain
-      Chain.new
-    end
-
-    # Returns an array of values for the given list of keys or callables on the
-    # given Hash.
-    def self.get_keys(input_hash, *keys_or_callables)
-      keys_or_callables.map{ |key|
-        key.respond_to?(:call) ? key.call(input_hash) : input_hash[key]
-      }
+      Chain.new.receiver
     end
   end
 
