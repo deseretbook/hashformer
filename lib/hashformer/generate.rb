@@ -23,6 +23,8 @@ module Hashformer
         values = @block.call(*values) if @block
         values
       end
+
+      # TODO: Make maps chainable?  Or at least add a #reduce method.
     end
 
     # Internal representation of a path to a nested key/value.  Do not
