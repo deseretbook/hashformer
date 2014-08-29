@@ -113,6 +113,12 @@ module Hashformer
         @calls << info
         self
       end
+
+      # Returns a String with the class name and a list of chained methods.
+      def to_s
+        "#{self.class.name}: #{@calls.map{|c| c[:name]}}"
+      end
+      alias inspect to_s
     end
 
     # TODO: Add a constant generator (that can be chained?)
