@@ -53,7 +53,7 @@ Hashformer.transform(data, xform)
 ```
 
 
-#### Nested values
+#### Nested *input* values
 
 If you need to grab values from a Hash or Array within a Hash, you can use
 `Hashformer::Generate.path` (or, the convenient shortcut, `HF::G.path`):
@@ -115,8 +115,8 @@ This is the most useful and powerful aspect of Hashformer.  You can use
 `HF::G.chain`, or the shortcut `HF[]`, to chain method calls and Array or Hash
 lookups:
 
-**Note:** *Method chaining may not work as expected if entered in `irb`, because
-`irb` might try to call `#to_s` or `#inspect` on the method chain!*
+_**Note:** Method chaining may not work as expected if entered in `irb`, because
+`irb` might try to call `#to_s` or `#inspect` on the method chain!_
 
 ```ruby
 data = {
@@ -258,6 +258,59 @@ xform = {
 
 Hashformer.transform(data, xform)
 # => {x: 0}
+```
+
+
+#### Nested *output* values
+
+As of Hashformer 0.2.2, you can also nest transformations within
+transformations to generate a Hash for an output value:
+
+```ruby
+data = {
+  a: 1,
+  b: 2,
+  c: 3
+}
+xform = {
+  a: {
+    all: ->(orig){ orig },
+  },
+  b: {
+    x: :a,
+    y: :b,
+    z: :c,
+  }
+}
+
+Hashformer.transform(data, xform)
+# => {a: { all: { a: 1, b: 2, c: 3 } }, b: { x: 1, y: 2, z: 3 }}
+```
+
+Nested transformations will still refer to the original input Hash, rather than
+any input key of the same name.  That way any value from the input can be used
+at any point in the output:
+
+```ruby
+data = {
+  a: 1,
+  b: {
+    a: 2,
+    b: 3,
+    c: 4
+  },
+  c: 5
+}
+xform = {
+  b: {
+    n: :a,             # Refers to the top-level :a
+    o: HF[:b][:a],     # Refers to the :a within :b
+    p: ->(h){ h[:c] }, # Refers to the top-level :c
+  }
+}
+
+Hashformer.transform(data, xform)
+# => {b: { n: 1, o: 2, p: 5 }}
 ```
 
 
