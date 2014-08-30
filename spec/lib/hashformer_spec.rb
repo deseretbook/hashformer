@@ -209,7 +209,7 @@ RSpec.describe Hashformer do
         end
       end
 
-      context 'Nested values' do
+      context 'Nested input values' do
         it 'produces the expected output for a present path' do
           data = {
             name: 'Hashformer',
@@ -358,6 +358,54 @@ RSpec.describe Hashformer do
           }
 
           expect(Hashformer.transform(data, xform)).to eq({x: 0})
+        end
+      end
+
+      context 'Nested output values' do
+        it 'produces the expected output for a flat input' do
+          data = {
+            a: 1,
+            b: 2,
+            c: 3
+          }
+          xform = {
+            a: {
+              all: ->(orig){ orig },
+            },
+            b: {
+              x: :a,
+              y: :b,
+              z: :c,
+            }
+          }
+          expected = {
+            a: { all: { a: 1, b: 2, c: 3 } },
+            b: { x: 1, y: 2, z: 3 }
+          }
+
+          expect(Hashformer.transform(data, xform)).to eq(expected)
+        end
+
+        it 'produces the expected output for a nested input' do
+          data = {
+            a: 1,
+            b: {
+              a: 2,
+              b: 3,
+              c: 4
+            },
+            c: 5
+          }
+          xform = {
+            b: {
+              n: :a,             # Refers to the top-level :a
+              o: HF[:b][:a],     # Refers to the :a within :b
+              p: ->(h){ h[:c] }, # Refers to the top-level :c
+            }
+          }
+          expected = {b: { n: 1, o: 2, p: 5 }}
+
+          expect(Hashformer.transform(data, xform)).to eq(expected)
         end
       end
 
