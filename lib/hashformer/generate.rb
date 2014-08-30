@@ -145,6 +145,8 @@ module Hashformer
     # the block.  If the block is not given, then the values are placed in an
     # array in the order in which their keys were given as parameters.
     #
+    # You can also pass a Hashformer transformation Hash as one or more keys.
+    #
     # Examples:
     #   HF::G.map(:first, :last) do |f, l| "#{f} #{l}".strip end
     #   HF::G.map(:a1, :a2) # Turns {a1: 1, a2: 2} into [1, 2]

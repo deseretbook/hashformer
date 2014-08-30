@@ -138,6 +138,26 @@ RSpec.describe Hashformer::Generate do
       end
     end
 
+    it 'works with transformations as keys' do
+      data = {
+        a: 1,
+        b: 2,
+        c: 3
+      }
+      xform = {
+        a: HF::G.map(:a, { a: HF::G.const(-1), b: :c }, :b)
+      }
+      expected = {
+        a: [
+          1,
+          { a: -1, b: 3 },
+          2
+        ]
+      }
+
+      expect(Hashformer.transform(data, xform)).to eq(expected)
+    end
+
     it 'works when chained' do
       xform = {
         name: HF::G.map(HF::G.map(:first, :last), HF::G.map(:last, :first))

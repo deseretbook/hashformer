@@ -253,6 +253,9 @@ Hashformer.transform(data, xform)
 # => {item_total: 12.0, total: 17.5}
 ```
 
+Finally, you can pass a transformation specification Hash as one or more of the
+parameters to `HF::G.map`.  See the RSpec tests for an example.
+
 
 #### Lambda processing
 
