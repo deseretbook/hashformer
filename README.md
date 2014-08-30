@@ -109,6 +109,37 @@ Hashformer.transform(data, xform)
 ```
 
 
+#### Constant values
+
+If you need to specify a constant value in your output Hash in version 0.2.2 or
+later, use `HF::G.const()`:
+
+```ruby
+data = {
+  irrelevant: 'data',
+}
+xform = {
+  data: HF::G.const(:irrelevant)
+}
+
+Hashformer.transform(data, xform)
+# => {data: :irrelevant}
+```
+
+Most types will work with `HF::G.const()`:
+
+```ruby
+data = {
+}
+xform = {
+  out: HF::G.const({a: 1, b: 2, c: [3, 4, 5]})
+}
+
+Hashformer.transform(data, xform)
+# => {out: {a: 1, b: 2, c: [3, 4, 5]}}
+```
+
+
 #### Method chaining
 
 This is the most useful and powerful aspect of Hashformer.  You can use

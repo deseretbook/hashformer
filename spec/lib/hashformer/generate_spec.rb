@@ -8,6 +8,28 @@ require 'spec_helper'
 require 'hashformer'
 
 RSpec.describe Hashformer::Generate do
+  describe '.const' do
+    let(:data) {
+      {}
+    }
+
+    it 'returns the original integer when given an integer' do
+      expect(Hashformer.transform({}, { a: HF::G.const(5) })).to eq({a: 5})
+    end
+
+    it 'returns the original array when given an array' do
+      expect(Hashformer.transform({a: 1}, { a: HF::G.const([1, 2, :three]) })).to eq({a: [1, 2, :three]})
+    end
+
+    it 'returns a symbol when given a symbol' do
+      expect(Hashformer.transform({q: nil}, { a: HF::G.const(:q) })).to eq({a: :q})
+    end
+
+    it 'can be used with .map' do
+      expect(Hashformer.transform({}, { a: HF::G.map(HF::G.const(-1)) })).to eq({a: [-1]})
+    end
+  end
+
   describe '.map' do
     let(:data) {
       {

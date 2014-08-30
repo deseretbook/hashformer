@@ -253,6 +253,29 @@ RSpec.describe Hashformer do
         end
       end
 
+      context 'Constant values' do
+        it 'produces the expected output for a symbol' do
+          data = {
+            irrelevant: 'data',
+          }
+          xform = {
+            data: HF::G.const(:irrelevant)
+          }
+
+          expect(Hashformer.transform(data, xform)).to eq({data: :irrelevant})
+        end
+
+        it 'produces the expected output for a hash' do
+          data = {
+          }
+          xform = {
+            out: HF::G.const({a: 1, b: 2, c: [3, 4, 5]})
+          }
+
+          expect(Hashformer.transform(data, xform)).to eq({out: {a: 1, b: 2, c: [3, 4, 5]}})
+        end
+      end
+
       context 'Method chaining' do
         it 'produces the expected output for simple method chaining' do
           data = {

@@ -121,7 +121,24 @@ module Hashformer
       alias inspect to_s
     end
 
-    # TODO: Add a constant generator (that can be chained?)
+    # Internal representation of a constant output value.  Do not instantiate
+    # directly; call Hashformer::Generate.const (or HF::G.const) instead.
+    class Constant
+      attr_reader :value
+
+      def initialize(value)
+        @value = value
+      end
+    end
+
+
+    # Generates a transformation that always returns a constant value.
+    #
+    # Examples:
+    #   HF::G.const(5)
+    def self.const(value)
+      Constant.new(value)
+    end
 
     # Generates a transformation that passes one or more values from the input
     # Hash (denoted by key names or paths (see Hashformer::Generate.path) to

@@ -61,6 +61,8 @@ module Hashformer
     if Hashformer::Generate::Chain::Receiver === key
       # Had to special case chains to allow chaining .call
       key.__chain.call(input_hash)
+    elsif Hashformer::Generate::Constant === key
+      key.value
     elsif key.respond_to?(:call)
       key.call(input_hash)
     elsif key.is_a?(Hash)
