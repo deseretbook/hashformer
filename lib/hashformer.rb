@@ -46,7 +46,7 @@ module Hashformer
       next if key == :__in_schema || key == :__out_schema
 
       key = key.call(value, data) if key.respond_to?(:call)
-      out[key] = self.get_value(data, value)
+      out[key] = self.get_value(data, value, xform)
     end
 
     validate(out, xform[:__out_schema], 'output') if validate
@@ -55,18 +55,19 @@ module Hashformer
   end
 
   # Returns a value for the given +key+, method chain, or callable on the given
-  # +input_hash+.
-  def self.get_value(input_hash, key)
+  # +input_hash+.  If +xform+ is not nil, then Hashe keys will be processed
+  # with Hashformer.transform.
+  def self.get_value(input_hash, key, xform = nil)
     if Hashformer::Generate::Chain::Receiver === key
       # Had to special case chains to allow chaining .call
       key.__chain.call(input_hash)
     elsif key.respond_to?(:call)
       key.call(input_hash)
+    elsif key.is_a?(Hash)
+      transform(input_hash, key)
     else
       input_hash[key]
     end
-
-    # TODO: add support for nested output hashes
   end
 
   private

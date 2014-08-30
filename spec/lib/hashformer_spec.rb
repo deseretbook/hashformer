@@ -406,6 +406,101 @@ RSpec.describe Hashformer do
           expect(Hashformer.transform(data, xform)).to eq(expected)
         end
       end
+
+      context 'Nested transformations' do
+        it 'produces the expected output for a practical example' do
+          in_schema = {
+            name: {
+              first: String,
+              last: String,
+            },
+
+            email: String,
+            phone: String,
+
+            address: {
+              line1: String,
+              line2: String,
+              city: String,
+              state: String,
+              zip: String,
+            }
+          }
+
+          out_schema = {
+            first: String,
+            last: String,
+            email: String,
+
+            address: {
+              phone: String,
+              lines: {
+                line1: String,
+                line2: String,
+              },
+              city: String,
+              state: String,
+              postcode: String,
+            }
+          }
+
+          xform = {
+            # Using multiple different transform types to make sure they all
+            # work here.  Normally one would use HF[] for all of these.
+            first: HF[:name][:first],
+            last: HF::G.path[:name][:last],
+            email: HF::G.map(:email){|e| e},
+
+            address: {
+              phone: :phone,
+              lines: {
+                line1: ->(u){ u[:address][:line1] },
+                line2: HF[:address][:line2],
+              },
+              city: HF[:address][:city],
+              state: HF::G.path[:address][:state],
+              postcode: HF[:address][:zip],
+            }
+          }
+
+          data = {
+            name: {
+              first: 'Hash',
+              last: 'Transformed',
+            },
+
+            email: 'Hashformer@example',
+            phone: '555-555-5555',
+
+            address: {
+              line1: '123 This Street',
+              line2: 'That One There',
+              city: 'Here',
+              state: 'ZZ',
+              zip: '00000',
+            }
+          }
+
+          expected = {
+            first: 'Hash',
+            last: 'Transformed',
+            email: 'Hashformer@example',
+
+            address: {
+              phone: '555-555-5555',
+              lines: {
+                line1: '123 This Street',
+                line2: 'That One There',
+              },
+              city: 'Here',
+              state: 'ZZ',
+              postcode: '00000',
+            }
+          }
+
+          expect(Hashformer.transform(data, xform)).to eq(expected)
+        end
+      end
     end
   end
 end
