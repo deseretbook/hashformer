@@ -9,20 +9,21 @@ require 'hashformer/version'
 require 'hashformer/generate'
 
 
-# This module contains the Hashformer methods for transforming Ruby Hash objects
-# from one form to another.
+# This module contains the Hashformer methods for transforming Ruby Hash
+# objects from one form to another.
 #
 # See README.md for examples.
 module Hashformer
   # Transforms +data+ according to the specification in +xform+.  The
   # transformation specification in +xform+ is a Hash specifying an input key
-  # name (e.g. a String or Symbol) or transforming lambda for each output key
-  # name.  If +validate+ is true, then ClassyHash::validate will be used to
-  # validate the input and output data formats against the :@__in_schema and
-  # :@__out_schema keys within +xform+, if specified.
+  # name (e.g. a String or Symbol), generator, or transforming lambda for each
+  # output key name.  If +validate+ is true, then ClassyHash::validate will be
+  # used to validate the input and output data formats against the
+  # :@__in_schema and :@__out_schema keys within +xform+, if specified.
   #
-  # Nested transformations can be specified by calling Hashformer::transform
-  # again inside of a lambda.
+  # Nested transformations can be specified by using a Hash as the
+  # transformation value, or by calling Hashformer.transform again inside of a
+  # lambda.
   #
   # If a value in +xform+ is a Proc, the Proc will be called with the input
   # Hash, and the return value of the Proc used as the output value.
