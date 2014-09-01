@@ -228,6 +228,14 @@ RSpec.describe Hashformer::Generate do
       expect(Hashformer.transform(data, xform)).to eq({out1: 22, out2: 'd', out3: 1})
     end
 
+    it 'does not add more chained methods when Chain#inspect is called' do
+      chain = HF[:test].one(1).two(2).three(3).four(4).five(5).__chain
+      inspect = chain.inspect
+      expect(inspect).to match(/one.*two.*three.*four.*five/)
+      expect(chain.inspect).to eq(inspect)
+      expect(chain.inspect).to eq(inspect)
+    end
+
     context 'using normally reserved methods' do
       it 'calls a proc with .call' do
         calldata = {
