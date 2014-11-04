@@ -90,6 +90,21 @@ module Hashformer
         undef singleton_method_undefined
       end
 
+      # Debuggable version of Receiver that inherits from Object.  This will
+      # break a lot of chains, but will allow some debugging tools to operate
+      # without crashing.
+      class DebuggableReceiver
+        # An oddly named accessor is used instead of #initialize to avoid
+        # conflicts with any methods that might be chained.
+        attr_accessor :__chain
+
+        # Adds a method call or array dereference to the list of calls to apply.
+        def method_missing(name, *args, &block)
+          @__chain << {name: name, args: args, block: block}
+          self
+        end
+      end
+
       # Returns the call chaining receiver.
       attr_reader :receiver
 
@@ -119,6 +134,13 @@ module Hashformer
         "#{self.class.name}: #{@calls.map{|c| c[:name]}}"
       end
       alias inspect to_s
+
+      # Makes Receiver into an Object, not just BasicObject.  This will break
+      # some method chains, but should allow some debugging tools to introspect
+      # Receiver without crashing
+      def self.enable_debugging
+        const_set :Receiver, ::Hashformer::Generate::Chain::DebuggableReceiver
+      end
     end
 
     # Internal representation of a constant output value.  Do not instantiate
