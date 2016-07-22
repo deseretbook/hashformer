@@ -1,12 +1,13 @@
 # Hashformer: A declarative data transformation DSL for Ruby
 # Created June 2014 by Mike Bourgeous, DeseretBook.com
-# Copyright (C)2014 Deseret Book
+# Copyright (C)2016 Deseret Book
 # See LICENSE and README.md for details.
 
 require 'classy_hash'
 
 require 'hashformer/version'
 require 'hashformer/generate'
+require 'hashformer/date'
 
 
 # This module contains the Hashformer methods for transforming Ruby Hash
