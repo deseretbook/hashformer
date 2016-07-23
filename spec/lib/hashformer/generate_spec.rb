@@ -1,6 +1,6 @@
 # Hashformer transformation generator tests
 # Created July 2014 by Mike Bourgeous, DeseretBook.com
-# Copyright (C)2014 Deseret Book
+# Copyright (C)2016 Deseret Book
 # See LICENSE and README.md for details.
 
 require 'spec_helper'
@@ -247,6 +247,39 @@ RSpec.describe Hashformer::Generate do
       it 'prevents further method calls or __as blocks from being added' do
         xf = { out1: HF[:in1][:in1].count.__end.odd?.__as{nil}.__end.no.more.calls.added }
         expect(Hashformer.transform(data, xf)).to eq({ out1: 4 })
+      end
+    end
+
+    context 'debugging methods' do
+      it 'can enable and disable debugging' do
+        begin
+          HF::G::Chain.enable_debugging
+
+          chain = HF[]
+
+          expect($stdout).to receive(:puts).with(/Adding.*__as/)
+          chain.__as{}
+
+          expect($stdout).to receive(:puts).with(/Adding.*info/)
+          chain.info
+
+          expect($stdout).to receive(:puts).with(/Ending/)
+          chain.__end
+
+          expect($stdout).to receive(:puts).with(/Ignoring.*__as/)
+          chain.__as{}
+
+          expect($stdout).to receive(:puts).with(/Ignoring.*info/)
+          chain.info
+
+
+          HF::G::Chain.disable_debugging
+
+          expect($stdout).not_to receive(:puts)
+          HF[].add.__as{}.and.some.methods.then.__end.the.chain
+        ensure
+          HF::G::Chain.disable_debugging
+        end
       end
     end
 
