@@ -18,12 +18,12 @@ module Hashformer
     # is a different class.
     #
     # Example:
-    #   data = { time: Time.at(0.75) }
-    #   xform = { ts: HF::G.date_to_int(:time) }
+    #   data = { time: Time.at(0.75), no_time: nil }
+    #   xform = { ts: HF::Date.to_i(:time), ts2: HF::Date.to_i(:no_time) }
     #   HF.transform(data, xform)
-    #   # => { ts: 0 }
-    def self.date_to_int(key)
-      HF[key].tap{|d|
+    #   # => { ts: 0, ts2: nil }
+    def self.to_i(key)
+      HF[key].__as{|d|
         d = d.to_time if d.is_a?(::Date)
         raise "Invalid date/time class #{d.class}" unless d.nil? || d.is_a?(Time) || d.is_a?(DateTime)
 
@@ -39,8 +39,14 @@ module Hashformer
     #
     # Raises an error during transformation if the input value is not nil and
     # is a different class.
-    def self.date_to_float(key)
-      HF[key].tap{|d|
+    #
+    # Example:
+    #   data = { time: Time.at(0.75), no_time: nil }
+    #   xform = { ts: HF::Date.to_f(:time), ts2: HF::Date.to_f(:no_time) }
+    #   HF.transform(data, xform)
+    #   # => { ts: 0.75, ts2: nil }
+    def self.to_f(key)
+      HF[key].__as{|d|
         d = d.to_time if d.is_a?(::Date)
         raise "Invalid date/time class #{d.class}" unless d.nil? || d.is_a?(Time) || d.is_a?(DateTime)
 
@@ -53,25 +59,32 @@ module Hashformer
     # serialization formats that don't support dates directly to database
     # interfaces that might expect DateTime rather than Time.
     #
-    # If +tz_name+ is given and the Time class responds to #in_time_zone
-    # (requires ActiveSupport::TimeWithZone, which is not loaded by
-    # Hashformer), then the date will be converted to the given named timezone.
+    # If +tz_name+ is the default special value of :utc, then the resulting
+    # DateTime will be in UTC time.  If +tz_name+ is nil, the default zone will
+    # be used.  Otherwise, if +tz_name+ is given and the Time class responds to
+    # #in_time_zone (requires ActiveSupport::TimeWithZone, which is not loaded
+    # by Hashformer), then the date will be converted to the given named
+    # timezone.
     #
     # Returns a method chain that can be further modified.
     #
-    # Raises an error during transformation if the input value is not nil and
-    # not Numeric.
-    def self.n_to_date(key, tz_name = nil)
-      if tz_name
+    # Raises an error during transformation if the input value is not a type
+    # supported by Time.at().
+    #
+    # Example:
+    def self.to_date(key, tz_name = :utc)
+      if tz_name == :utc
+        HF[key].__as{|d|
+          d && Time.at(d).utc.to_datetime
+        }
+      elsif tz_name
         raise 'ActiveSupport time helpers are required for tz_name' unless Time.instance_methods.include?(:in_time_zone)
 
-        HF[key].tap{|d|
-          raise "Invalid timestamp class #{d.class}" unless d.nil? || d.is_a?(Numeric)
+        HF[key].__as{|d|
           d && Time.at(d).in_time_zone(tz_name).to_datetime
         }
       else
-        HF[key].tap{|d|
-          raise "Invalid timestamp class #{d.class}" unless d.nil? || d.is_a?(Numeric)
+        HF[key].__as{|d|
           d && Time.at(d).to_datetime
         }
       end
