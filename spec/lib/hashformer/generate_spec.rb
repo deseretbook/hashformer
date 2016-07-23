@@ -9,10 +9,6 @@ require 'hashformer'
 
 RSpec.describe Hashformer::Generate do
   describe '.const' do
-    let(:data) {
-      {}
-    }
-
     it 'returns the original integer when given an integer' do
       expect(Hashformer.transform({}, { a: HF::G.const(5) })).to eq({a: 5})
     end
@@ -234,6 +230,24 @@ RSpec.describe Hashformer::Generate do
       expect(inspect).to match(/one.*two.*three.*four.*five/)
       expect(chain.inspect).to eq(inspect)
       expect(chain.inspect).to eq(inspect)
+    end
+
+    describe '.__as' do
+      it 'returns the value from the block' do
+        xf = { out1: HF[:in1][:in1][0].__as{|v| "H#{v}shformer" } }
+        expect(Hashformer.transform(data, xf)).to eq({ out1: 'Hashformer' })
+      end
+
+      it 'raises an error if no block is given' do
+        expect{ HF[].__as() }.to raise_error(/No block given/)
+      end
+    end
+
+    describe '.__end' do
+      it 'prevents further method calls or __as blocks from being added' do
+        xf = { out1: HF[:in1][:in1].count.__end.odd?.__as{nil}.__end.no.more.calls.added }
+        expect(Hashformer.transform(data, xf)).to eq({ out1: 4 })
+      end
     end
 
     context 'using normally reserved methods' do
