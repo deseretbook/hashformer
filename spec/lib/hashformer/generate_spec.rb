@@ -3,11 +3,7 @@
 # Copyright (C)2016 Deseret Book
 # See LICENSE and README.md for details.
 
-require 'spec_helper'
-
-require 'hashformer'
-
-RSpec.describe Hashformer::Generate do
+describe Hashformer::Generate do
   describe '.const' do
     it 'returns the original integer when given an integer' do
       expect(Hashformer.transform({}, { a: HF::G.const(5) })).to eq({a: 5})

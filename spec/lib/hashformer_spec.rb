@@ -3,11 +3,7 @@
 # Copyright (C)2014 Deseret Book
 # See LICENSE and README.md for details.
 
-require 'spec_helper'
-
-require 'hashformer'
-
-RSpec.describe Hashformer do
+describe Hashformer do
   describe '.validate' do
     let(:in_schema) {
       # ClassyHash schema - https://github.com/deseretbook/classy_hash

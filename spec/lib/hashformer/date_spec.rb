@@ -3,12 +3,10 @@
 # Copyright (C)2016 Deseret Book
 # See LICENSE and README.md for details.
 
-require 'spec_helper'
-require 'hashformer'
 require 'rational'
 require 'active_support/time'
 
-RSpec.describe Hashformer::Date do
+describe Hashformer::Date do
   let(:data) {
     {
       one_time: Time.at(1),
