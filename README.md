@@ -147,7 +147,8 @@ This is the most useful and powerful aspect of Hashformer.  You can use
 lookups:
 
 _**Note:** Method chaining may not work as expected if entered in `irb`, because
-`irb` might try to call `#to_s` or `#inspect` on the method chain!_
+`irb` might try to call `#to_s` or `#inspect` on the method chain!  See `.__end`
+and `.enable_debugging` for possible solutions_
 
 ```ruby
 data = {
