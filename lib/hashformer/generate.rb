@@ -62,22 +62,53 @@ module Hashformer
     # Internal representation of a method call and array lookup chainer.  Do
     # not use this directly; instead use HF::G.chain().
     class Chain
-      # Receiver for chaining calls that has no methods of its own except
-      # initialize.  This allows methods like :call to be chained.
-      #
-      # IMPORTANT: No methods other than .__chain can be called on this object,
-      # because they will be chained!  Instead, use === to detect the object's
-      # type, for example.
-      class Receiver < BasicObject
+      # Base module that defines methods included by BasicReceiver and
+      # DebuggableReceiver.
+      module ReceiverMethods
         # An oddly named accessor is used instead of #initialize to avoid
         # conflicts with any methods that might be chained.
         attr_accessor :__chain
 
-        # Adds a method call or array dereference to the list of calls to apply.
+        # Adds a method call or array dereference to the list of calls to
+        # apply.  Does nothing if #__end has been called.  Returns self for
+        # more chaining.
         def method_missing(name, *args, &block)
-          @__chain << {name: name, args: args, block: block}
+          @__ended ||= false
+          @__chain << {name: name, args: args, block: block} unless @__ended
           self
         end
+
+        # Adds a call to the given +block+ to the chain like Object#tap, but
+        # returns the result of the block instead of the original object.  Any
+        # arguments given will be passed to the +block+ after the current
+        # value.  Does nothing if #__end has been called.  Returns self for
+        # more chaining.
+        #
+        # This is similar in spirit (but not implementation) to
+        # http://stackoverflow.com/a/12849214
+        def __as(*args, &block)
+          ::Kernel.raise 'No block given to #__as' unless ::Kernel.block_given?
+          @__ended ||= false
+          @__chain << {args: args, block: block} unless @__ended
+          self
+        end
+
+        # Disables further chaining.  Any future method calls will just return
+        # the existing chain without modifying it.
+        def __end
+          @__ended = true
+          self
+        end
+      end
+
+      # Receiver for chaining calls that has no methods of its own except
+      # initialize.  This allows methods like :call to be chained.
+      #
+      # IMPORTANT: No methods other than #__chain, #__as, or #__end should be
+      # called on this object, because they will be chained!  Instead, use ===
+      # to detect the object's type, for example.
+      class BasicReceiver < BasicObject
+        include ReceiverMethods
 
         undef !=
         undef ==
@@ -90,27 +121,62 @@ module Hashformer
         undef singleton_method_undefined
       end
 
-      # Debuggable version of Receiver that inherits from Object.  This will
-      # break a lot of chains, but will allow some debugging tools to operate
-      # without crashing.
+      # Debuggable chain receiver that inherits from Object.  This will break a
+      # lot of chains (e.g. any chain using #to_s or #inspect), but will allow
+      # some debugging tools to operate without crashing.  See
+      # Hashformer::Generate::Chain.enable_debugging.
       class DebuggableReceiver
-        # An oddly named accessor is used instead of #initialize to avoid
-        # conflicts with any methods that might be chained.
-        attr_accessor :__chain
+        include ReceiverMethods
 
-        # Adds a method call or array dereference to the list of calls to apply.
+        # Overrides ReceiverMethods#method_missing to print out methods as they
+        # are added to the chain.
         def method_missing(name, *args, &block)
-          @__chain << {name: name, args: args, block: block}
-          self
+          $stdout.puts "Adding #{name.inspect}(#{args.map(&:inspect).join(', ')}){#{block}} to chain #{__id__}"
+          super
+        end
+
+        # Overrides ReceiverMethods#__as to print out blocks as they are added
+        # to the chain.
+        def __as(*args, &block)
+          $stdout.puts "Adding __as(#{args.map(&:inspect).join(', ')}){#{block}} to chain #{__id__}"
+          super
+        end
+
+        # Overrides ReceiverMethods#__end to print a message when a chain is
+        # ended.
+        def __end
+          $stdout.puts "Ending chain #{__id__}"
+          super
         end
       end
 
-      # Returns the call chaining receiver.
+      class << self
+        # The chaining receiver class that will be used by newly created chains
+        # (must include ReceiverMethods).
+        def receiver_class
+          @receiver_class ||= BasicReceiver
+        end
+
+        # Switches Receiver to an Object (DebuggableReceiver) for debugging.
+        # debugging tools to introspect Receiver without crashing.
+        def enable_debugging
+          @receiver_class = DebuggableReceiver
+        end
+
+        # Switches Receiver back to a BasicObject (BasicReceiver).
+        def disable_debugging
+          @receiver_class = BasicReceiver
+        end
+      end
+
+
+      # Returns the call chaining receiver for this chain.
       attr_reader :receiver
 
+      # Initializes an empty chain.
       def initialize
         @calls = []
-        @receiver = Receiver.new
+        @receiver = self.class.receiver_class.new
         @receiver.__chain = self
       end
 
@@ -118,12 +184,17 @@ module Hashformer
       def call(input_hash)
         value = input_hash
         @calls.each do |c|
-          value = value.send(c[:name], *c[:args], &c[:block])
+          if c[:name]
+            value = value.send(c[:name], *c[:args], &c[:block])
+          else
+            # Support #__as
+            value = c[:block].call(value, *c[:args])
+          end
         end
         value
       end
 
-      # Adds the given call info (used by Receiver).
+      # Adds the given call info (used by ReceiverMethods).
       def <<(info)
         @calls << info
         self
@@ -134,13 +205,6 @@ module Hashformer
         "#{self.class.name}: #{@calls.map{|c| c[:name]}}"
       end
       alias inspect to_s
-
-      # Makes Receiver into an Object, not just BasicObject.  This will break
-      # some method chains, but should allow some debugging tools to introspect
-      # Receiver without crashing
-      def self.enable_debugging
-        const_set :Receiver, ::Hashformer::Generate::Chain::DebuggableReceiver
-      end
     end
 
     # Internal representation of a constant output value.  Do not instantiate
@@ -200,6 +264,8 @@ module Hashformer
     # Generates a method call chain to apply to the input hash given to a
     # transformation.  This allows path references (as with HF::G.path) and
     # method calls to be stored and applied later.
+    #
+    # See Hashformer::Generate::Chain.enable_debugging if you run into issues.
     #
     # Example:
     #   data = { in1: { in2: [1, 2, 3, [4, 5, 6, 7]] } }
