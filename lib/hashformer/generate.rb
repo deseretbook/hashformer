@@ -131,14 +131,14 @@ module Hashformer
         # Overrides ReceiverMethods#method_missing to print out methods as they
         # are added to the chain.
         def method_missing(name, *args, &block)
-          $stdout.puts "Adding #{name.inspect}(#{args.map(&:inspect).join(', ')}){#{block}} to chain #{__id__}"
+          __dbg_msg(name, args, block)
           super
         end
 
         # Overrides ReceiverMethods#__as to print out blocks as they are added
         # to the chain.
         def __as(*args, &block)
-          $stdout.puts "Adding __as(#{args.map(&:inspect).join(', ')}){#{block}} to chain #{__id__}"
+          __dbg_msg('__as', args, block)
           super
         end
 
@@ -147,6 +147,17 @@ module Hashformer
         def __end
           $stdout.puts "Ending chain #{__id__}"
           super
+        end
+
+        private
+
+        # Prints a debugging message for the addition of the given method
+        # +name+, +args+, and +block+.  Prints "Adding..." for active chains,
+        # "Ignoring..." for ended chains.
+        def __dbg_msg(name, args, block)
+          $stdout.puts "#{@__ended ? 'Ignoring' : 'Adding'} " \
+            "#{name.inspect}(#{args.map(&:inspect).join(', ')}){#{block}} " \
+            "to chain #{__id__}"
         end
       end
 
