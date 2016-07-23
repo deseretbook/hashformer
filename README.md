@@ -210,6 +210,31 @@ Hashformer.transform({x: -12}, xform)
 # => {x: 29}
 ```
 
+##### `__as` and `__end`
+
+Added in version 0.3.0, **TODO**
+
+```ruby
+def func(x)
+  "something to do with #{x}"
+end
+
+HF[].__as{|v| 'test ' + func(v) }
+```
+
+```ruby
+HF[].__end.no.more.methods # TODO
+```
+
+##### Debugging chains
+
+**TODO**
+
+```ruby
+HF::G::Chain.enable_debugging
+HF::G::Chain.disable_debugging
+```
+
 
 #### Mapping one or more values
 
@@ -232,7 +257,8 @@ Hashformer.transform(data, xform)
 ```
 
 You can also mix and match paths and method chains in the `HF::G.map`
-parameters:
+parameters.  The result of the method chain transformation or path retrieval
+will be used in the map, instead of looking up a key in the original hash:
 
 ```ruby
 data = {
@@ -345,6 +371,16 @@ xform = {
 
 Hashformer.transform(data, xform)
 # => {b: { n: 1, o: 2, p: 5 }}
+```
+
+#### Dates and times
+
+Added in version 0.3.0, **TODO**
+
+```ruby
+HF::Date.to_i(:time)
+HF::Date.to_f(:time)
+HF::Date.to_date(:numeric)
 ```
 
 
