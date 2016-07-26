@@ -14,8 +14,16 @@ keys, input keys, and transformations, and Hashformer will convert your data
 into the format you specify.  It can also help verify your transformations by
 validating input and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
 
+Note that Hashformer is not for everyone.  If your data transformation needs
+don't involve massive changes to the data structure or values, and/or you don't
+need multiple people to be able to work on the transformations separately from
+other code, you might be better off doing your transformations in plain Ruby.
+
 
 ### Examples
+
+Examples of each feature are provided here, but complete documentation for each
+method lives in the code.
 
 #### Basic renaming
 
@@ -211,25 +219,50 @@ Hashformer.transform({x: -12}, xform)
 # => {x: 29}
 ```
 
-##### `__as` and `__end`
+##### `__as`
 
-Added in version 0.3.0, **TODO**
+The special `__as` method on a method chain, added in version 0.3.0, allows you
+to work with the chain's current value in a block like `Object#tap`, but the
+return value of the block is passed to the next step of the chain.  This is
+useful if you need to pass the chain value to an outside function.
 
 ```ruby
 def func(x)
   "something to do with #{x}"
 end
 
-HF[].__as{|v| 'test ' + func(v) }
+xform = {
+  out: HF[:in].__as{|v| 'test ' + func(v) }
+}
+
+Hashformer.transform({ in: 'code' }, xform)
+# => { out: 'something to do with test code' }
 ```
 
+##### `__end`
+
+The `__end` method on a method chain will disable further modification of the
+chain.  This is not normally needed unless your transformation Hashes might be
+`#inspect`ed by other code (e.g. IRB or Pry).  Using `__end` might prevent you
+from needing to enable chain debugging.
+
 ```ruby
-HF[].__end.no.more.methods # TODO
+xform = {
+  # Everything after __end will be ignored, including __as
+  out: HF[:in].to_s.__end.to_i.no.more.methods
+}
+
+Hashformer.transform({ in: 100 })
+# => { out: '100' }
 ```
 
 ##### Debugging chains
 
-**TODO**
+If `__end` isn't enough to make your method chains work with whatever debugging
+or instrumentation you have, you can enable chain debugging.  *When chain
+debugging is enabled, any standard `Object` methods cannot be added to chains
+(this includes commonly chained methods like `#to_s`).*  Each method added to a
+chain will also be printed to `$stdout`.
 
 ```ruby
 HF::G::Chain.enable_debugging
@@ -376,12 +409,25 @@ Hashformer.transform(data, xform)
 
 #### Dates and times
 
-Added in version 0.3.0, **TODO**
+We found ourselves writing a lot of identical date transformation `Proc`s in our
+transformations, so version 0.3.0 adds some helpers for transforming dates to
+and from numeric values.  If you use Hashformer in a project that also uses
+ActiveSupport, you can transform time zones as well.
 
 ```ruby
-HF::Date.to_i(:time)
-HF::Date.to_f(:time)
-HF::Date.to_date(:numeric)
+xform = {
+  int: HF::Date.to_i(:time),
+  float: HF::Date.to_f(:time),
+  date: HF::Date.to_date(:numeric),
+}
+
+data = {
+  time: Time.at(10.75),
+  numeric: 10.75
+}
+
+Hashformer.transform(data, xform)
+# => { int: 10, float: 10.75, date: #<DateTime 1970-01-01...}
 ```
 
 
