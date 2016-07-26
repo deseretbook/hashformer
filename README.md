@@ -1,6 +1,6 @@
 Hashformer
 =========
-[![Gem Version](https://badge.fury.io/rb/hashformer.svg)](http://badge.fury.io/rb/hashformer) [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status?branch=master)](https://www.codeship.io/projects/24888)
+[![Gem Version](https://badge.fury.io/rb/hashformer.svg)](http://badge.fury.io/rb/hashformer) [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Build Status](https://travis-ci.org/deseretbook/hashformer.svg)](https://travis-ci.org/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status?branch=master)](https://www.codeship.io/projects/24888)
 
 ### Transform any Ruby Hash with a declarative DSL
 
