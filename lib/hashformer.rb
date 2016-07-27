@@ -1,12 +1,13 @@
 # Hashformer: A declarative data transformation DSL for Ruby
 # Created June 2014 by Mike Bourgeous, DeseretBook.com
-# Copyright (C)2014 Deseret Book
+# Copyright (C)2016 Deseret Book
 # See LICENSE and README.md for details.
 
 require 'classy_hash'
 
 require 'hashformer/version'
 require 'hashformer/generate'
+require 'hashformer/date'
 
 
 # This module contains the Hashformer methods for transforming Ruby Hash
@@ -47,7 +48,7 @@ module Hashformer
       next if key == :__in_schema || key == :__out_schema
 
       key = key.call(value, data) if key.respond_to?(:call)
-      out[key] = self.get_value(data, value, xform)
+      out[key] = self.get_value(data, value)
     end
 
     validate(out, xform[:__out_schema], 'output') if validate
@@ -56,10 +57,10 @@ module Hashformer
   end
 
   # Returns a value for the given +key+, method chain, or callable on the given
-  # +input_hash+.  If +xform+ is not nil, then Hashe keys will be processed
-  # with Hashformer.transform.
-  def self.get_value(input_hash, key, xform = nil)
-    if Hashformer::Generate::Chain::Receiver === key
+  # +input_hash+.  Hash keys will be processed with Hashformer.transform for
+  # supporting nested transformations.
+  def self.get_value(input_hash, key)
+    if Hashformer::Generate::Chain::ReceiverMethods === key
       # Had to special case chains to allow chaining .call
       key.__chain.call(input_hash)
     elsif Hashformer::Generate::Constant === key

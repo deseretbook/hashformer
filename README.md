@@ -1,6 +1,6 @@
 Hashformer
 =========
-[![Gem Version](https://badge.fury.io/rb/hashformer.svg)](http://badge.fury.io/rb/hashformer) [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Codeship Status for deseretbook/hashformer](https://www.codeship.io/projects/dd988da0-dee7-0131-9e92-7e1ff0bec112/status?branch=master)](https://www.codeship.io/projects/24888)
+[![Gem Version](https://badge.fury.io/rb/hashformer.svg)](http://badge.fury.io/rb/hashformer) [![Code Climate](https://codeclimate.com/github/deseretbook/hashformer.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Test Coverage](https://codeclimate.com/github/deseretbook/hashformer/coverage.png)](https://codeclimate.com/github/deseretbook/hashformer) [![Build Status](https://travis-ci.org/deseretbook/hashformer.svg)](https://travis-ci.org/deseretbook/hashformer)
 
 ### Transform any Ruby Hash with a declarative DSL
 
@@ -14,8 +14,16 @@ keys, input keys, and transformations, and Hashformer will convert your data
 into the format you specify.  It can also help verify your transformations by
 validating input and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
 
+Note that Hashformer is not for everyone.  If your data transformation needs
+don't involve massive changes to the data structure or values, and/or you don't
+need multiple people to be able to work on the transformations separately from
+other code, you might be better off doing your transformations in plain Ruby.
+
 
 ### Examples
+
+Examples of each feature are provided here, but complete documentation for each
+method lives in the code.
 
 #### Basic renaming
 
@@ -147,7 +155,8 @@ This is the most useful and powerful aspect of Hashformer.  You can use
 lookups:
 
 _**Note:** Method chaining may not work as expected if entered in `irb`, because
-`irb` might try to call `#to_s` or `#inspect` on the method chain!_
+`irb` might try to call `#to_s` or `#inspect` on the method chain!  See `.__end`
+and `.enable_debugging` for possible solutions_
 
 ```ruby
 data = {
@@ -210,6 +219,56 @@ Hashformer.transform({x: -12}, xform)
 # => {x: 29}
 ```
 
+##### `__as`
+
+The special `__as` method on a method chain, added in version 0.3.0, allows you
+to work with the chain's current value in a block like `Object#tap`, but the
+return value of the block is passed to the next step of the chain.  This is
+useful if you need to pass the chain value to an outside function.
+
+```ruby
+def func(x)
+  "something to do with #{x}"
+end
+
+xform = {
+  out: HF[:in].__as{|v| 'test ' + func(v) }
+}
+
+Hashformer.transform({ in: 'code' }, xform)
+# => { out: 'something to do with test code' }
+```
+
+##### `__end`
+
+The `__end` method on a method chain will disable further modification of the
+chain.  This is not normally needed unless your transformation Hashes might be
+`#inspect`ed by other code (e.g. IRB or Pry).  Using `__end` might prevent you
+from needing to enable chain debugging.
+
+```ruby
+xform = {
+  # Everything after __end will be ignored, including __as
+  out: HF[:in].to_s.__end.to_i.no.more.methods
+}
+
+Hashformer.transform({ in: 100 })
+# => { out: '100' }
+```
+
+##### Debugging chains
+
+If `__end` isn't enough to make your method chains work with whatever debugging
+or instrumentation you have, you can enable chain debugging.  *When chain
+debugging is enabled, any standard `Object` methods cannot be added to chains
+(this includes commonly chained methods like `#to_s`).*  Each method added to a
+chain will also be printed to `$stdout`.
+
+```ruby
+HF::G::Chain.enable_debugging
+HF::G::Chain.disable_debugging
+```
+
 
 #### Mapping one or more values
 
@@ -232,7 +291,8 @@ Hashformer.transform(data, xform)
 ```
 
 You can also mix and match paths and method chains in the `HF::G.map`
-parameters:
+parameters.  The result of the method chain transformation or path retrieval
+will be used in the map, instead of looking up a key in the original hash:
 
 ```ruby
 data = {
@@ -345,6 +405,29 @@ xform = {
 
 Hashformer.transform(data, xform)
 # => {b: { n: 1, o: 2, p: 5 }}
+```
+
+#### Dates and times
+
+We found ourselves writing a lot of identical date transformation `Proc`s in our
+transformations, so version 0.3.0 adds some helpers for transforming dates to
+and from numeric values.  If you use Hashformer in a project that also uses
+ActiveSupport, you can transform time zones as well.
+
+```ruby
+xform = {
+  int: HF::Date.to_i(:time),
+  float: HF::Date.to_f(:time),
+  date: HF::Date.to_date(:numeric),
+}
+
+data = {
+  time: Time.at(10.75),
+  numeric: 10.75
+}
+
+Hashformer.transform(data, xform)
+# => { int: 10, float: 10.75, date: #<DateTime 1970-01-01...}
 ```
 
 
