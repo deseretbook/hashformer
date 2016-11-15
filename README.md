@@ -12,7 +12,9 @@ vaguely like XSLT, but way less complicated and way more Ruby.
 You specify Hash to Hash transformations using a Hash with a list of output
 keys, input keys, and transformations, and Hashformer will convert your data
 into the format you specify.  It can also help verify your transformations by
-validating input and output data using [Classy Hash](https://github.com/deseretbook/classy_hash).
+validating input and output data using
+[ClassyHash](https://github.com/deseretbook/classy_hash) (either 0.1.x or 0.2.x
+versions).
 
 Note that Hashformer is not for everyone.  If your data transformation needs
 don't involve massive changes to the data structure or values, and/or you don't

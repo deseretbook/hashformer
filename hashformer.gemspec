@@ -25,10 +25,10 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "classy_hash", "~> 0.1", ">= 0.1.1"
 
-  spec.add_development_dependency "bundler", "~> 1.11"
+  spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rspec", "~> 3.5"
   spec.add_development_dependency "simplecov", "~> 0.12.0"
-  spec.add_development_dependency "codeclimate-test-reporter"
+  spec.add_development_dependency "codeclimate-test-reporter", "~> 0.6.0"
   spec.add_development_dependency "byebug", "~> 9.0" unless RUBY_PLATFORM == 'java'
   spec.add_development_dependency "activesupport", "~> 4.2"
 end
